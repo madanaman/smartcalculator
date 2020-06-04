@@ -1,0 +1,107 @@
+type: edu
+custom_name: stage5
+files:
+- name: tests.py
+  visible: false
+  text: |
+    from hstest.stage_test import *
+    from hstest.test_case import TestCase
+
+    CheckResult.correct = lambda: CheckResult(True, '')
+    CheckResult.wrong = lambda feedback: CheckResult(False, feedback)
+
+
+    class CalcTest(StageTest):
+        def generate(self) -> List[TestCase]:
+            cases = {"100 + 200 - 300\n/exit": "0\nBye!",
+                     "4 + 6 - 8\n\n\n2 - 3 - 4\n\n8 + 7 - 4\n/exit": "2\n-5\n11\nBye!",
+                     "abc\n123+\n+15\n18 22\n\n-22\n22-\n/exit": "Invalid expression\nInvalid expression\n15\nInvalid expression\n-22\nInvalid expression\nBye!",
+                     "/go\n/exit": "Unknown command\nBye!"}
+            return [TestCase(stdin=case,
+                             attach=cases[case])
+                    for case in cases]
+
+        def check(self, reply: str, attach) -> CheckResult:
+            return CheckResult(reply.strip() == attach.strip(), "")
+
+
+    if __name__ == '__main__':
+        CalcTest("calculator.calculator").run_tests()
+  learner_created: false
+- name: calculator/calculator.py
+  visible: true
+  text: |-
+    ''' Below is solution to add 2 numbers
+    a = input().rstrip()
+    while a != "/exit":
+        a = a.split()
+        if len(a) == 0:
+            a = input()
+            continue
+        elif len(a) < 2:
+            b = 0
+        elif len(a) == 2:
+            b = a[1]
+        a = a[0]
+        print(int(a) + int(b))
+        a = input()
+    if a == "/exit":
+        print('Bye!')
+        '''
+
+    '''Now its time to add unlimited numbers'''
+    '''a = input().rstrip()
+    while a != "/exit":
+        if a == "/help":
+            print("The program calculates the sum of numbers")
+            a = input()
+            continue
+
+        a = a.split()
+        if len(a) == 0:
+            a = input()
+            continue
+
+        print(sum(int(i) for i in a))
+
+        a = input()
+
+    if a == "/exit":
+        print('Bye!')'''
+
+    '''Now its time to add two operations add and subtract'''
+
+
+    def parse_opeator(operator):
+        # Only minus sign contributes to changing sign at the moment
+        if operator.count("-") % 2 == 0:
+            return "+"
+        return "-"
+
+    def do_calculation(in_array):
+        nums = [int(in_array[i]) for i in range(len(in_array)) if i % 2 == 0]
+        operators = [parse_opeator(in_array[i]) for i in range(len(in_array)) if i % 2 != 0]
+
+        total = nums[0]
+        for i in range(1, len(nums)):
+            sign = 1
+            if operators[i-1] == "-":
+                sign = -1
+            total += int(nums[i]) * sign
+        return total
+
+    while True:
+        values = input().split()
+        if len(values) == 0:
+            continue
+        if values[0] == "/exit":
+            break
+        if values[0] == "/help":
+            print("The program calculates the sum of numbers")
+            continue
+        print(do_calculation(values))
+    print("Bye!")
+  learner_created: true
+feedback_link: https://hyperskill.org/projects/74/stages/413/implement
+status: Solved
+record: 5
