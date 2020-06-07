@@ -103,5 +103,5 @@ files:
     print("Bye!")
   learner_created: true
 feedback_link: https://hyperskill.org/projects/74/stages/413/implement
-status: Solved
+status: Failed
 record: 5

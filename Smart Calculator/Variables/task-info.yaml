@@ -103,5 +103,5 @@ files:
     print("Bye!")
   learner_created: true
 feedback_link: https://hyperskill.org/projects/74/stages/414/implement
-status: Unchecked
+status: Solved
 record: -1
