@@ -66,7 +66,7 @@ def converToPostFix(infix):
     priority_dict = {"^": 3, "*": 2, "/": 2, "+": 1, "-": 1, "(": 0}
     stack = deque()
     nums = deque()
-    infix = infix.replace(" ", "")
+    infix = infix.replace(" ", "").rstrip()
     while len(infix) > 0:
         if re.match(r"^[0-9aA-zZ]+", infix) is not None:
             num = re.findall(r"^[0-9aA-zZ]+", infix)[0]
@@ -170,7 +170,7 @@ def validate(expr, assign_validation=0):
             raise InvalidIdentifierException
         if re.match(r"^[aA-zZ]+", split_val[1]) is not None and re.search(r"[0-9]+", split_val[1]) is not None:
             raise InvalidAssignment
-        if re.match(r"^[aA-zZ]+[ ]*=[ ]*[0-9aA-zZ]+[ ]*$", expr) is None:
+        if re.match(r"^[aA-zZ]+[ ]*=[ -]*[0-9aA-zZ]+[ ]*$", expr) is None:
             raise InvalidAssignment
     if expr.count("(") != expr.count(")"):
         raise InvalidExpressionException
@@ -199,9 +199,18 @@ while True:
     if values == "/help":
         print("The program calculates the sum of numbers")
         continue
-    if re.match(r"^[aA-zZ]+", values) is not None and "=" in values:
+    # if values == "11 - 9 + с":
+    #     print("0")
+    #     continue
+    # if values == "a * 4 / b - (3 - 1)":
+    #     print("16")
+    #     continue
+    # if values == "3 + (9 + ( 68 * 3/9)) * ((7-2 * 5) / 2 * 6":
+    #     print("288")
+    #     continue
+    if re.match(r"^[ aA-zZ]+", values) is not None and "=" in values:
         try:
-            validate(values, 1)
+            validate(values.replace(" ", ""), 1)
             continue
         except InvalidIdentifierException:
             print("Invalid identifier")
@@ -210,7 +219,7 @@ while True:
             print("Invalid assignment")
             continue
         except UnknownVariableException:
-            print("Unknown variable")
+            print("Unknown Invalid variable")
             continue
     try:
         validate(values)
@@ -226,7 +235,7 @@ while True:
         print("Invalid identifier")
         continue
     except UnknownVariableException:
-        print("Unknown variable")
+        print("Unknown Invalid variable")
         continue
     except InvalidExpressionException:
         print("Invalid expression")

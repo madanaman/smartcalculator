@@ -7,22 +7,134 @@ files:
     from hstest.stage_test import *
     from hstest.test_case import TestCase
 
-    CheckResult.correct = lambda: CheckResult(True, '')
-    CheckResult.wrong = lambda feedback: CheckResult(False, feedback)
-
 
     class CalcTest(StageTest):
         def generate(self) -> List[TestCase]:
-            cases = {"100 + 200 - 300\n/exit": "0\nBye!",
-                     "4 + 6 - 8\n\n\n2 - 3 - 4\n\n8 + 7 - 4\n/exit": "2\n-5\n11\nBye!",
-                     "abc\n123+\n+15\n18 22\n\n-22\n22-\n/exit": "Invalid expression\nInvalid expression\n15\nInvalid expression\n-22\nInvalid expression\nBye!",
-                     "/go\n/exit": "Unknown command\nBye!"}
-            return [TestCase(stdin=case,
-                             attach=cases[case])
-                    for case in cases]
+            return [TestCase(stdin=['/help', self.test_1, self.test_2, self.test_3, self.test_4, self.test_5,
+                                    self.test_6, self.test_7, self.test_8, self.test_9, self.test_10, self.test_11,
+                                    self.test_12, self.test_13, self.test_14, self.test_15, self.test_exit])]
+
+        # test of help command
+        def test_1(self, output):
+            output = str(output).lower().strip()
+            if len(output.split(" ")) < 3:
+                return CheckResult.wrong("It seems like there was no any \"help\" message.")
+            return ""
+
+        # test of an empty input
+        def test_2(self, output):
+            output = str(output)
+            if len(output) != 0:
+                return CheckResult.wrong("Incorrect response to an empty string. "
+                                         "The program should not print anything.")
+            return "7 + 1 + 4"
+
+        # the previous stage tests #################################################
+        # sum of positive
+        def test_3(self, output):
+            output = str(output).lower().strip()
+            if output != "12":
+                return CheckResult.wrong("The program cannot sum more than two numbers.")
+            return "23 - 17 - 13"
+
+        # mixed operations
+        def test_4(self, output):
+            output = str(output).lower().strip()
+            if output != "-7":
+                return CheckResult.wrong("Incorrect sum of positive and negative numbers.")
+            return "33 + 21 + 11 + 49 - 32 - 9 + 1 - 80 + 4"
+
+        # mixed operations
+        def test_5(self, output):
+            output = str(output).lower().strip()
+            if output != "-2":
+                return CheckResult.wrong("Incorrect sum of positive and negative numbers.")
+            return "101"
+
+        # one positive
+        def test_6(self, output):
+            output = str(output).lower().strip()
+            if output != "101":
+                return CheckResult.wrong("The program printed not the same number that was entered "
+                                         "(when one number is entered it is a valid expression).")
+            return "-302"
+
+        # one negative
+        def test_7(self, output):
+            output = str(output).lower().strip()
+            if output != "-302":
+                return CheckResult.wrong("The program printed not the same number that was entered.")
+            return "10 - 7 - 3"
+
+        # sum is equal to zero
+        def test_8(self, output):
+            output = str(output).lower().strip()
+            if output != "0":
+                return CheckResult.wrong("The problem when sum is equal to 0 has occurred.")
+            return "5 --- 2 ++++++ 4 -- 2 ---- 1"
+
+        # multiple operators
+        def test_9(self, output):
+            output = str(output).lower().strip()
+            if output != "10":
+                return CheckResult.wrong("The program cannot process multiple operations with several operators.")
+            return "123+"
+
+        # tests for this step ######################################################
+        # test of invalid expression
+        def test_10(self, output):
+            output = str(output).lower().strip()
+            if "invalid" not in output:
+                return CheckResult.wrong("The program cannot process an invalid expression.")
+            return "321-"
+
+        # test of invalid expression
+        def test_11(self, output):
+            output = str(output).lower().strip()
+            if "invalid" not in output:
+                return CheckResult.wrong("The program cannot process an invalid expression.")
+            return "+7"
+
+        # input one number with plus in front of it
+        def test_12(self, output):
+            output = str(output).lower().strip()
+            if output != "7":
+                return CheckResult.wrong("The program not correctly processes useless plus sign.")
+            return "abc"
+
+        # not numbers in input
+        def test_13(self, output):
+            output = str(output).lower().strip()
+            if "invalid" not in output:
+                return CheckResult.wrong("The program should print \"Invalid expression\" " +
+                                         "when not a numbers are entered")
+            return "one + two + three"
+
+        # not numbers in input
+        def test_14(self, output):
+            output = str(output).lower().strip()
+            if "invalid" not in output:
+                return CheckResult.wrong("The program should print \"Invalid expression\" " +
+                                         "when not a numbers are entered")
+            return "/go"
+
+        # test of nonexistent command
+        def test_15(self, output):
+            output = str(output).lower().strip()
+            if "unknown" not in output:
+                return CheckResult.wrong("The program should print \"Unknown command\" " +
+                                         "when a nonexistent command is entered.")
+            return "/exit"
+
+        # test of exit
+        def test_exit(self, output):
+            output = str(output).lower().strip()
+            if "bye" not in output:
+                return CheckResult.wrong("Your program didn't print \"bye\" after entering \"/exit\".")
+            return CheckResult.correct()
 
         def check(self, reply: str, attach) -> CheckResult:
-            return CheckResult(reply.strip() == attach.strip(), "")
+            return CheckResult.correct()
 
 
     if __name__ == '__main__':
